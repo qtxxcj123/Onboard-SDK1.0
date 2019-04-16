@@ -51,6 +51,7 @@ USART3_Config(uint32_t baudrate)
     USART3_GPIO_Config();
 
     USART_InitTypeDef USART_InitStructure;
+
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);
 
     USART_InitStructure.USART_BaudRate   = 230400;
@@ -65,7 +66,9 @@ USART3_Config(uint32_t baudrate)
     USART_ITConfig(USART3, USART_IT_RXNE, ENABLE);
 
     USART_Cmd(USART3, ENABLE);
+
     while (USART_GetFlagStatus(USART3, USART_FLAG_TXE) != SET);
+	
 } //USART3_Config
 
 static void 
@@ -133,12 +136,14 @@ SysTick_Handler(void)
 void 
 USART3_IRQHandler(void)   // 云台飞控
 {
+		uint8_t res = 0;
     if (USART_GetFlagStatus(USART3, USART_FLAG_RXNE) == SET)
     {
 			//已处理
         isACKProcessed = false;
 			//框架           协议层         字节处理
-        isFrame = vehicle->protocolLayer->byteHandler(USART_ReceiveData(USART3));
+			res = USART_ReceiveData(USART3);
+        isFrame = vehicle->protocolLayer->byteHandler(res);
         if (isFrame == true)
         {                               //获得框架
             rFrame = vehicle->protocolLayer->getReceivedFrame();

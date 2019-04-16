@@ -54,8 +54,6 @@ interiorVehicleInit(void)
 	vehicle->subscribe->init();
 	vehicle->ack->init();
 	vehicle->encrypt = false;
-	
-	vehicle->getDroneVersion(0,0);
 }
 
 static void processReceivedData(RecvContainer *receivedFrame)

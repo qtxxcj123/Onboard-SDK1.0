@@ -21,14 +21,13 @@ delay_nms(uint16_t time)
 
 int main(void)
 {
+	externVehicleInit();
+	vehicle->init();
+	SystickConfig();
 	USART1_Confug(0);
 	USART3_Config(0);
 	NVIC_Config();
-	//USART3_Config(0);
-	//delay_init(168);
-	SystickConfig();
-	externVehicleInit();
-	vehicle->init();
+	vehicle->getDroneVersion(0,0);
 	extendedVersionBase = FW(3, 2, 36, 6);
 	if (vehicle->getFwVersion() > 0 &&
             vehicle->getFwVersion() < extendedVersionBase &&
