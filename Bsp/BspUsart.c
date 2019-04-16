@@ -26,6 +26,14 @@ USART3_Config(uint32_t baudrate)
 
     USART_Cmd(USART3, ENABLE);
     while (USART_GetFlagStatus(USART3, USART_FLAG_TXE) != SET);
+		
+		
+		NVIC_InitTypeDef NVIC_InitStructure;
+		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x00;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority        = 0x00;
+    NVIC_InitStructure.NVIC_IRQChannel                   = USART3_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelCmd                = ENABLE;
+		NVIC_Init(&NVIC_InitStructure);
 } //USART3_Config
 
 static void 
