@@ -2,9 +2,10 @@
 #include "Vehicle.h"
 #include "malloc.h"
 //static(interior) function statement
-static void init(DJI_MISSION_TYPE type, VehicleCallBack callback,UserData missionData);
-static void initWayptMission(VehicleCallBack callback, UserData wayptData);
+static void init(DJI_MISSION_TYPE type, int timeout, UserData missionData);
+static void initWayptMission(int timeout, UserData wayptData);
 static void missionCallback(Vehicle* vehiclePtr, RecvContainer recvFrame,UserData userData);
+static ErrorCode inits(DJI_MISSION_TYPE type, int timeout, UserData missionData);
 //global variable
 MissionManager* missionManager;
 
@@ -20,12 +21,11 @@ void externManagerInit(void)
 }
 
 static void
-init(DJI_MISSION_TYPE type, VehicleCallBack callback,
-                     UserData missionData)
+init(DJI_MISSION_TYPE type, int timeout, UserData missionData)
 {
   if (true||type == WAYPOINT)
   {
-    initWayptMission(callback, missionData);
+    initWayptMission(timeout, missionData);
   }
   else
   {
@@ -33,15 +33,16 @@ init(DJI_MISSION_TYPE type, VehicleCallBack callback,
   }
 }
 
+
 static void
-initWayptMission(VehicleCallBack callback, UserData wayptData)
+initWayptMission(int timeout, UserData wayptData)
 {
   missionManager->wpMissionArray[missionManager->wayptCounter] = (WaypointMission*)mymalloc(sizeof(WaypointMission));
   missionManager->wpMission                    = missionManager->wpMissionArray[missionManager->wayptCounter];
   missionManager->wayptCounter++;
 	externWaypointInit(missionManager->wpMission);
 
-  missionManager->wpMission->init((WayPointInitSettings*)wayptData, callback, wayptData);
+  missionManager->wpMission->init((WayPointInitSettings*)wayptData, timeout);
 }
 
 static void 

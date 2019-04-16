@@ -19,7 +19,7 @@ typedef enum MISSION_ACTION
   RESUME = 3,
 }MISSION_ACTION;
 
-typedef void(*managerInit)(DJI_MISSION_TYPE, VehicleCallBack,UserData); // ≥ı º
+typedef void(*managerInit)(DJI_MISSION_TYPE, int,UserData); // ≥ı º
 typedef void(*managerCallback)(struct Vehicle*, RecvContainer,UserData);
 typedef struct MissionManager {
 // function pointer

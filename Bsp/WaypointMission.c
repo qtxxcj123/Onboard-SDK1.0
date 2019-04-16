@@ -2,7 +2,7 @@
 #include "Vehicle.h"
 #include "MissionManager.h"
 // static(interior) function statement
-static void init(WayPointInitSettings* Info, VehicleCallBack callback,UserData userData);
+static void init(WayPointInitSettings* Info, int timeout);
 static void setInfo(WayPointInitSettings value);
 static bool uploadIndexData(WayPointSettings* data,VehicleCallBack callback, UserData userData);
 static void setIndex(WayPointSettings* value, size_t pos);
@@ -25,27 +25,38 @@ void externWaypointInit(WaypointMission* waypoint)
 	waypoint->start = start;
 }
 
-static void
-init(WayPointInitSettings* Info, VehicleCallBack callback,
-                      UserData userData)
+void
+init(WayPointInitSettings* Info, int timeout)
 {
   if (Info)
+  {
     setInfo(*Info);
-
-  int cbIndex = vehicle->callbackIdIndex();
-  if (callback)
-  {
-    vehicle->nbCallbackFunctions[cbIndex] = (void*)callback;
-    vehicle->nbUserData[cbIndex]          = userData;
   }
-  else
-  {
-    vehicle->nbCallbackFunctions[cbIndex] = missionManager->missionCallback;
-    vehicle->nbUserData[cbIndex] = NULL;
-  }
-  vehicle->protocolLayer->openProtocolSend(2, vehicle->getEncryption(),waypointInit,
-                               &info, sizeof(info), 500, 2, true, cbIndex);
+  vehicle->protocolLayer->openProtocolSend(2, vehicle->getEncryption(),
+                               waypointInit,&info, sizeof(info), 500, 2, false, 2);
 }
+
+//static void
+//init(WayPointInitSettings* Info, VehicleCallBack callback,
+//                      UserData userData)
+//{
+//  if (Info)
+//    setInfo(*Info);
+
+//  int cbIndex = vehicle->callbackIdIndex();
+//  if (callback)
+//  {
+//    vehicle->nbCallbackFunctions[cbIndex] = (void*)callback;
+//    vehicle->nbUserData[cbIndex]          = userData;
+//  }
+//  else
+//  {
+//    vehicle->nbCallbackFunctions[cbIndex] = missionManager->missionCallback;
+//    vehicle->nbUserData[cbIndex] = NULL;
+//  }
+//  vehicle->protocolLayer->openProtocolSend(2, vehicle->getEncryption(),waypointInit,
+//                               &info, sizeof(info), 500, 2, true, cbIndex);
+//}
 
 static void
 setInfo(WayPointInitSettings value)

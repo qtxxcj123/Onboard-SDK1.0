@@ -3,7 +3,7 @@
 #include "type.h"
 
 struct WaypointMission;
-typedef void(*waypointInitFunc)(WayPointInitSettings*, VehicleCallBack,UserData);
+typedef void(*waypointInitFunc)(WayPointInitSettings*, int);
 typedef bool(*uploadDataFunc)(WayPointSettings*,VehicleCallBack, UserData); 
 typedef void(*startFunc)(VehicleCallBack callback, UserData userData);
 
