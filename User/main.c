@@ -21,7 +21,9 @@ delay_nms(uint16_t time)
 int main(void)
 {
 	USART3_Config(0);
-	uart_init(115200);
+	USART1_Confug(0);
+	NVIC_Config();
+	//USART3_Config(0);
 	//delay_init(168);
 	SystickConfig();
 	externVehicleInit();

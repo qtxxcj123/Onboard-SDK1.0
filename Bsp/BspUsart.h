@@ -10,6 +10,9 @@ void USART3_Config(uint32_t baudrate);
 static void USART3_GPIO_Config(void);
 void SystickConfig(void);
 uint64_t getTimeStamp(void);
+void USART1_Confug(uint32_t baudrate);
+void USART1_GPIO_Config(void);
+void NVIC_Config(void);
 
 #endif
 
