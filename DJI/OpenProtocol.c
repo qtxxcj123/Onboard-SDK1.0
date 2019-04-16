@@ -280,6 +280,7 @@ static int sendInterface(void* cmd_container)
 			     //发送会话
       MY_DEBUG("Sending session %d\n", cmdSession->sessionID);
       protocolLayer->openProtocolSendData(cmdSession->mmu->pmem);
+			freeSession(cmdSession);
       break;
     default:
 			        //未知模式
@@ -915,7 +916,6 @@ sendUsart(const uint8_t* buf, size_t len)
   }
 
   int sent_byte_count = 0;
-	printf("<@-----");
   while (len--)
   {
 		while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
@@ -925,7 +925,6 @@ sendUsart(const uint8_t* buf, size_t len)
 
     ++sent_byte_count;
   }
-	printf("-----@>%d",count);
 	count++;
   return sent_byte_count;
 } //sendUsart

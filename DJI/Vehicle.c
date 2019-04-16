@@ -199,6 +199,7 @@ if (!eventData)
 static void 
 activate(ActivateData *data, VehicleCallBack callback,UserData userData)
 {
+		vehicle->getDroneVersion(0,0);
     data->version        = vehicle->versionData.fwVersion;
     vehicle->accountData          = *data;
     vehicle->accountData.reserved = 2;
@@ -207,8 +208,8 @@ activate(ActivateData *data, VehicleCallBack callback,UserData userData)
     {
         vehicle->accountData.iosID[i] = '0'; //! @note for ios verification   用于iOS验证
     }
-    //DSTATUS("version 0x%X\n", versionData.fwVersion);
-    //DDEBUG("%.32s", accountData.iosID);
+    MY_DEBUG("version 0x%X\n", versionData.fwVersion);
+    MY_DEBUG("%.32s", accountData.iosID);
     //! Using function prototype II of send
     int cbIndex = callbackIdIndex();
     if (callback)
