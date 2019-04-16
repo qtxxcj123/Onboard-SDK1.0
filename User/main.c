@@ -18,10 +18,11 @@ delay_nms(uint16_t time)
         while (i--);
     }
 }
+
 int main(void)
 {
-	USART3_Config(0);
 	USART1_Confug(0);
+	USART3_Config(0);
 	NVIC_Config();
 	//USART3_Config(0);
 	//delay_init(168);
