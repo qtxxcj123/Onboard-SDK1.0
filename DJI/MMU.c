@@ -23,8 +23,8 @@ interiMMUInit(void)
 
 }
 
-void
-setupMMU()
+static void
+setupMMU(MMU* mmu)
 {
   uint32_t i;
   mmu->memoryTable[0].tabIndex  = 0;
@@ -42,8 +42,8 @@ setupMMU()
   mmu->memoryTable[MMU_TABLE_NUM - 1].memSize   = 0;
 }
 
-void
-freeMemory(MMU_Tab* mmu_tab)
+static void
+freeMemory(MMU* mmu,MMU_Tab* mmu_tab)
 {
   if (mmu_tab == (MMU_Tab*)0)
   {
@@ -56,8 +56,8 @@ freeMemory(MMU_Tab* mmu_tab)
   mmu_tab->usageFlag = 0;
 }
 
-MMU_Tab*
-allocMemory(uint16_t size)
+static MMU_Tab*
+allocMemory(MMU* mmu,uint16_t size)
 {
   uint32_t mem_used = 0;
   uint8_t  i;

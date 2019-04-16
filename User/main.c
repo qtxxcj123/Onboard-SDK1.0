@@ -8,11 +8,22 @@ RecvContainer *rFrame;
 extern Vehicle* vehicle;
 extern FirmWare extendedVersionBase;
 extern const FirmWare M100_31;
+void
+delay_nms(uint16_t time)
+{
+    u32 i = 0;
+    while (time--)
+    {
+        i = 30000;
+        while (i--);
+    }
+}
 int main(void)
 {
 	USART3_Config(0);
 	uart_init(115200);
-	delay_init(168);
+	//delay_init(168);
+	SystickConfig();
 	externVehicleInit();
 	vehicle->init();
 	extendedVersionBase = FW(3, 2, 36, 6);
@@ -25,18 +36,50 @@ int main(void)
         return false;
   }
 	userActivate();
-  delay_ms(500);
+  delay_nms(500);
 	if (vehicle->getFwVersion() != M100_31)
   {
       vehicle->subscribe->verify();
-      delay_ms(500);
+      delay_nms(500);
   }
 	vehicle->obtainCtrlAuthority(0,0);
 	while(1)
 	{
-		MY_DEBUG("init OK ");
-		delay_ms(5000);
+		printf("init OK \r\n");
+		delay_nms(5000);
 	}
+}
+void setWaypointInitDefaults(WayPointInitSettings* fdata);
+void setWaypointDefaults(WayPointSettings* wp);
+void uploadingWaypoint(WayPointSettings* wp);
+
+void waypointHandler()
+{
+	WayPointInitSettings fdata;
+	setWaypointInitDefaults(&fdata);
+	fdata.indexNumber = 3;
+	vehicle->missionManager->init(WAYPOINT,1,&fdata);
+	WayPointSettings wp;
+	setWaypointDefaults(&wp);
+	delay_nms(500);
+	wp.index = 0;
+	//经纬度 - 添加
+	// TODO
+  delay_nms(500);
+	uploadingWaypoint(&wp);
+	wp.index = 1;
+	//经纬度 - 添加
+	// TODO
+	delay_nms(500);
+	uploadingWaypoint(&wp);
+	wp.index = 2;
+	//经纬度 - 添加
+	// TODO
+	delay_nms(500);
+	uploadingWaypoint(&wp);
+	delay_nms(500);
+	vehicle->missionManager->wpMission->start(0,0);
+	
 }
 
 void setWaypointInitDefaults(WayPointInitSettings* fdata)

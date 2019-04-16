@@ -4,6 +4,7 @@ bool                  isACKProcessed    = false;
 bool                  ackReceivedByUser = false;
 extern RecvContainer *rFrame;
 extern Vehicle* vehicle;
+uint64_t tick = 0;
 void
 USART3_Config(uint32_t baudrate)
 {
@@ -45,7 +46,33 @@ USART3_GPIO_Config(void)
    GPIO_PinAFConfig(GPIOB, GPIO_PinSource11, GPIO_AF_USART3); // rx
 } //USART3_GPIO_Config
 
-void USART3_IRQHandler(void)   // 云台飞控
+uint64_t
+getTimeStamp(void)
+{
+	return tick;
+}
+
+void
+SystickConfig()
+{
+    if (SysTick_Config(SystemCoreClock / 1000)) // 1000 ticks per second.
+    {
+        while (1); // run here when error.
+    }
+}
+
+void
+SysTick_Handler(void)
+{
+    if (tick > 4233600000ll) // 49 days non-reset would cost a tick reset.
+    {
+        tick = 0;
+    }
+    tick++;
+}
+
+void 
+USART3_IRQHandler(void)   // 云台飞控
 {
     if (USART_GetFlagStatus(USART3, USART_FLAG_RXNE) == SET)
     {
@@ -67,7 +94,9 @@ void USART3_IRQHandler(void)   // 云台飞控
         }
     }
 }
-void HardFault_Handler(void)
+
+void 
+HardFault_Handler(void)
 {
     uint32_t temp;
     temp = SCB->CFSR;					//fault状态寄存器(@0XE000ED28)包括:MMSR,BFSR,UFSR

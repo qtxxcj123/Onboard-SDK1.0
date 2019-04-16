@@ -52,5 +52,9 @@ Module.symvers
 Mkfile.old
 dkms.conf
 =======
-/Project
+/Project/DebugConfig/*
+/Project/Listings/*
+/Project/Objects/*
+
+
 >>>>>>> sdk1.0

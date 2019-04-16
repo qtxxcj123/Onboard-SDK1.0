@@ -15,8 +15,8 @@ typedef FirmWare(*vehicleGetFwVersion)(void);
 typedef void(*vehicleActivate)(ActivateData*, VehicleCallBack,UserData);
 typedef int(*vehicleCallbackIdIndex)(void);
 typedef bool(*vehicleGetEncryption)(void);
-typedef void(*obtainAndrelease)(VehicleCallBack, UserData);
-
+//typedef void(*obtainAndrelease)(VehicleCallBack, UserData);
+typedef void(*basicFunc)(VehicleCallBack, UserData);
 typedef struct Vehicle{
 	OpenProtocol*           protocolLayer; //添加一个open类
 	struct CircularBuffer*  circularBuffer; //缓存
@@ -31,9 +31,9 @@ typedef struct Vehicle{
 	vehicleActivate								 activate;
 	vehicleCallbackIdIndex         callbackIdIndex;
 	vehicleGetEncryption           getEncryption;
-	obtainAndrelease               obtainCtrlAuthority;
-	obtainAndrelease               releaseCtrlAuthority;
-	
+	basicFunc                      obtainCtrlAuthority;
+	basicFunc                      releaseCtrlAuthority;
+	basicFunc                      getDroneVersion;
 	// 变量
 	void*    nbCallbackFunctions[200]; //! @todo magic number
 	UserData nbUserData[200];          //! @todo magic number
@@ -83,5 +83,11 @@ static void obtainCtrlAuthority(VehicleCallBack callback, UserData userData);
 static void releaseCtrlAuthority(VehicleCallBack callback, UserData userData);
 
 static void controlAuthorityCallback(Vehicle *vehiclePtr, RecvContainer recvFrame,UserData userData);
+
+static bool parseDroneVersionInfo(VersionData* versionData,uint8_t *ackPtr);
+
+static void getDroneVersionCallback(Vehicle *vehiclePtr, RecvContainer recvFrame, UserData userData);
+
+static void getDroneVersion(VehicleCallBack callback, UserData userData);
 
 #endif

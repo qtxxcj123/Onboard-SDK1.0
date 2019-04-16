@@ -1,5 +1,6 @@
 #include "version.h"
 FirmWare extendedVersionBase;
+const char* M100 = "M100";
 const FirmWare M100_31           = 0x03010A00;//Version::FW(3, 1, 10,  0  );
 FirmWare
 FW(uint8_t a, uint8_t b, uint8_t c, uint8_t d)

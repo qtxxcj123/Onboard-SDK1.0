@@ -16,7 +16,11 @@
 #define MAX_INCOMING_DATA_SIZE  300
 #define MAX_ACK_SIZE            107
 
+#ifdef USER_DEBUG
 #define MY_DEBUG(format,...) printf("FILE: "__FILE__", LINE: %d: "format"\r\n", __LINE__, ##__VA_ARGS__)
+#else
+#define MY_DEBUG(format,...)
+#endif
 
 typedef uint64_t time_ms;
 

@@ -23,7 +23,7 @@ static void
 init(DJI_MISSION_TYPE type, VehicleCallBack callback,
                      UserData missionData)
 {
-  if (type == WAYPOINT)
+  if (true||type == WAYPOINT)
   {
     initWayptMission(callback, missionData);
   }

@@ -16,6 +16,7 @@ extern CircularBuffer* circularBuffer;
 extern DataSubscription* subscribes;
 extern Ack* ack;
 extern MissionManager* missionManager;
+extern const char* M100;
 
 Vehicle* vehicle;
 int callbackId;
@@ -41,6 +42,7 @@ externVehicleInit(void)
 	vehicle->getEncryption  = getEncryption;
 	vehicle->obtainCtrlAuthority = obtainCtrlAuthority;
 	vehicle->releaseCtrlAuthority = releaseCtrlAuthority;
+	vehicle->getDroneVersion      = getDroneVersion;
 }
 
 static void 
@@ -52,6 +54,8 @@ interiorVehicleInit(void)
 	vehicle->subscribe->init();
 	vehicle->ack->init();
 	vehicle->encrypt = false;
+	
+	vehicle->getDroneVersion(0,0);
 }
 
 static void processReceivedData(RecvContainer *receivedFrame)
@@ -333,6 +337,260 @@ releaseCtrlAuthority(VehicleCallBack callback, UserData userData)
 												setControl, &data, 1,500, 2, true, cbIndex);
 }
 
+static void 
+getDroneVersion(VehicleCallBack callback, UserData userData)
+{
+    vehicle->versionData.version_ack = CommonACK_NO_RESPONSE_ERROR;
+    vehicle->versionData.version_crc     = 0x0;
+    vehicle->versionData.version_name[0] = 0;
+    vehicle->versionData.fwVersion       = 0;
+
+    uint32_t cmd_timeout = 100; // unit is ms
+    uint32_t retry_time  = 3;
+    uint8_t  cmd_data    = 0;
+    int      cbIndex     = callbackIdIndex();
+    if (callback)
+    {
+        vehicle->nbCallbackFunctions[cbIndex] = (void *)callback;
+        vehicle->nbUserData[cbIndex]          = userData;
+    }
+    else
+    {
+        vehicle->nbCallbackFunctions[cbIndex] = (void *)getDroneVersionCallback;
+        vehicle->nbUserData[cbIndex]          = NULL;
+    }
+
+    // When UserData is implemented, pass the Vehicle as userData.
+    vehicle->protocolLayer->openProtocolSend(2, 0, getVersion,(uint8_t *)&cmd_data, 1, 
+																	cmd_timeout, retry_time, true,cbIndex);
+}
+
+static void 
+getDroneVersionCallback(Vehicle *vehiclePtr, RecvContainer recvFrame, UserData userData)
+{
+
+    if (!parseDroneVersionInfo(&vehiclePtr->versionData,recvFrame.recvData.versionACK))
+    {
+        MY_DEBUG("Drone version not obtained! Please do not proceed.\n"
+               "Possible reasons:\n"
+               "\tSerial port connection:\n"
+               "\t\t* SDK is not enabled, please check DJI Assistant2 -> SDK -> [v] Enable API Control.\n"
+               "\t\t* Baudrate is not correct, please double-check from DJI Assistant2 -> SDK -> baudrate.\n"
+               "\t\t* TX and RX pins are inverted.\n"
+               "\t\t* Serial port is occupied by another program.\n"
+               "\t\t* Permission required. Please do 'sudo usermod -a -G dialout $USER' "
+               "(you do not need to replace $USER with your username). Then logout and login again\n");
+
+        //! Set fwVersion to 0 so we can catch the error.
+        vehiclePtr->versionData.fwVersion = 0;
+    }
+    else
+    {
+        //! Finally, we print stuff out.
+        if (vehiclePtr->versionData.fwVersion > FW(3, 1, 0, 0))
+        {
+            MY_DEBUG("Device Serial No. = %.16s\n",
+                    vehiclePtr->versionData.hw_serial_num);
+        }
+        MY_DEBUG("Hardware = %.12s\n", vehiclePtr->versionData.hwVersion);
+        MY_DEBUG("Firmware = %X\n", vehiclePtr->versionData.fwVersion);
+        if (vehiclePtr->versionData.fwVersion < FW(3, 2, 0, 0))
+        {
+            MY_DEBUG("Version CRC = 0x%X\n", vehiclePtr->versionData.version_crc);
+        }
+    }
+}
+
+static bool 
+parseDroneVersionInfo(VersionData* versionData,uint8_t *ackPtr)
+{
+
+    VersionData versionStruct;
+
+    //! Note down our starting point as a sanity check
+    uint8_t *startPtr = ackPtr;
+    //! 2b ACK.
+    versionStruct.version_ack = ackPtr[0] + (ackPtr[1] << 8);
+    ackPtr += 2;
+
+    //! Next, we might have CRC or ID; Put them into a variable that we will parse
+    //! later. Find next \0
+    uint8_t crc_id[16] = {};
+    int     i          = 0;
+    while (*ackPtr != '\0')
+    {
+        crc_id[i] = *ackPtr;
+        i++;
+        ackPtr++;
+        if (ackPtr - startPtr > 18)
+        {
+            return false;
+        }
+    }
+    //! Fill in the termination character
+    crc_id[i] = *ackPtr;
+    ackPtr++;
+
+    //! Now we're at the name. First, let's fill up the name field.
+    memcpy(versionStruct.version_name, ackPtr, 32);
+
+    //! Now, we start parsing the name. Let's find the second space character.
+    while (*ackPtr != ' ')
+    {
+        ackPtr++;
+        if (ackPtr - startPtr > 64)
+        {
+            return false;
+        }
+    } //! Found first space ("SDK-v1.x")
+    ackPtr++;
+
+    while (*ackPtr != ' ')
+    {
+        ackPtr++;
+        if (ackPtr - startPtr > 64)
+        {
+            return false;
+        }
+    } //! Found second space ("BETA")
+    ackPtr++;
+
+    //! Next is the HW version
+    int j = 0;
+    while (*ackPtr != '-')
+    {
+        versionStruct.hwVersion[j] = *ackPtr;
+        ackPtr++;
+        j++;
+        if (ackPtr - startPtr > 64)
+        {
+            return false;
+        }
+    }
+    //! Fill in the termination character
+    versionStruct.hwVersion[j] = '\0';
+    ackPtr++;
+
+    //! Finally, we come to the FW version. We don't know if each clause is 2 or 3
+    //! digits long.
+    int ver1 = 0, ver2 = 0, ver3 = 0, ver4 = 0;
+
+    while (*ackPtr != '.')
+    {
+        ver1 = (*ackPtr - 48) + 10 * ver1;
+        ackPtr++;
+        if (ackPtr - startPtr > 64)
+        {
+            return false;
+        }
+    }
+    ackPtr++;
+    while (*ackPtr != '.')
+    {
+        ver2 = (*ackPtr - 48) + 10 * ver2;
+        ackPtr++;
+        if (ackPtr - startPtr > 64)
+        {
+            return false;
+        }
+    }
+    ackPtr++;
+    while (*ackPtr != '.')
+    {
+        ver3 = (*ackPtr - 48) + 10 * ver3;
+        ackPtr++;
+        if (ackPtr - startPtr > 64)
+        {
+            return false;
+        }
+    }
+    ackPtr++;
+    while (*ackPtr != '\0')
+    {
+        ver4 = (*ackPtr - 48) + 10 * ver4;
+        ackPtr++;
+        if (ackPtr - startPtr > 64)
+        {
+            return false;
+        }
+    }
+
+    versionStruct.fwVersion = FW(ver1, ver2, ver3, ver4);
+
+    //! Special cases
+    //! M100:
+    if (strcmp(versionStruct.hwVersion, M100) == 0)
+    {
+        //! Bug in M100 does not report the right FW.
+        ver3                    = 10 * ver3;
+        versionStruct.fwVersion = FW(ver1, ver2, ver3, ver4);
+    }
+    //! M600/A3 FW 3.2.10
+    if (versionStruct.fwVersion == FW(3, 2, 10, 0))
+    {
+        //! Bug in M600 does not report the right FW.
+        ver3                    = 10 * ver3;
+        versionStruct.fwVersion = FW(ver1, ver2, ver3, ver4);
+    }
+
+    //! Now, we can parse the CRC and ID based on FW version. If it's older than
+    //! 3.2 then it'll have a CRC, else not.
+    if (versionStruct.fwVersion < FW(3, 2, 0, 0))
+    {
+        versionStruct.version_crc =
+            crc_id[0] + (crc_id[1] << 8) + (crc_id[2] << 16) + (crc_id[3] << 24);
+        uint8_t *id_ptr = &crc_id[4];
+
+        int i = 0;
+        while (*id_ptr != '\0')
+        {
+            versionStruct.hw_serial_num[i] = *id_ptr;
+            i++;
+            id_ptr++;
+            if (id_ptr - &crc_id[4] > 12)
+            {
+                return false; //! Not catastrophic error
+            }
+        }
+        //! Fill in the termination character
+        versionStruct.hw_serial_num[i] = *id_ptr;
+    }
+    else
+    {
+        versionStruct.version_crc = 0;
+        uint8_t *id_ptr           = &crc_id[0];
+
+        int i = 0;
+        while (*id_ptr != '\0')
+        {
+            versionStruct.hw_serial_num[i] = *id_ptr;
+            i++;
+            id_ptr++;
+            if (id_ptr - &crc_id[0] > 16)
+            {
+                return false; //! Not catastrophic error
+            }
+        }
+        //! Fill in the termination character
+        versionStruct.hw_serial_num[i] = *id_ptr;
+    }
+
+    //! Finally, we print stuff out.
+
+    if (versionStruct.fwVersion > FW(3, 1, 0, 0))
+    {
+        MY_DEBUG("Device Serial No. = %.16s\n", versionStruct.hw_serial_num);
+    }
+    MY_DEBUG("Hardware = %.12s\n", versionStruct.hwVersion);
+    MY_DEBUG("Firmware = %d.%d.%d.%d\n", ver1, ver2, ver3, ver4);
+    if (versionStruct.fwVersion < FW(3, 2, 0, 0))
+    {
+        MY_DEBUG("Version CRC = 0x%X\n", versionStruct.version_crc);
+    }
+
+    *versionData = versionStruct;
+    return true;
+}
 
 static int 
 callbackIdIndex(void)

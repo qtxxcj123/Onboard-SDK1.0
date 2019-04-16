@@ -1,8 +1,9 @@
 #include "OpenProtocol.h"
 #include "malloc.h"
+#include "BspUsart.h"
 extern MMU mmuPtr;
 OpenProtocol* protocolLayer;
-uint8_t tick = 0;
+extern uint64_t tick;
 
 void 
 externOpenProtocolInit()
@@ -47,7 +48,7 @@ interOpenProtocolInit(void)
 static void 
 setup(void)
 {
-	protocolLayer->mmu->setupMMU();
+	protocolLayer->mmu->setupMMU(protocolLayer->mmu);
 	setupSession();
 } // setup
 
@@ -98,7 +99,7 @@ allocSession(uint16_t session_id, uint16_t size)
   if (i < 32 &&  protocolLayer->CMDSessionTab[i].usageFlag == 0)
   {
      protocolLayer->CMDSessionTab[i].usageFlag = 1;
-    memoryTab                  =  protocolLayer->mmu->allocMemory(size);
+    memoryTab                  =  protocolLayer->mmu->allocMemory(protocolLayer->mmu,size);
     if (memoryTab == NULL)
        protocolLayer->CMDSessionTab[i].usageFlag = 0;
     else
@@ -116,7 +117,7 @@ freeSession(CMDSession* session)
   if (session->usageFlag == 1)
   {
     MY_DEBUG("session id %d\n", session->sessionID);
-    protocolLayer->mmu->freeMemory(session->mmu);
+    protocolLayer->mmu->freeMemory(protocolLayer->mmu,session->mmu);
     session->usageFlag = 0;
   }
 } //freeSession
@@ -227,7 +228,7 @@ static int sendInterface(void* cmd_container)
       cmdSession->callbackID = cmdContainer->callbackID;
       cmdSession->timeout =
         (cmdContainer->timeout > POLL_TICK) ? cmdContainer->timeout : POLL_TICK;
-      cmdSession->preTimestamp = tick;//deviceDriver->getTimeStamp();
+      cmdSession->preTimestamp = getTimeStamp();//deviceDriver->getTimeStamp();
       cmdSession->sent         = 1;
       cmdSession->retry        = 1;
 			         //发送会话
@@ -273,7 +274,7 @@ static int sendInterface(void* cmd_container)
       cmdSession->callbackID = cmdContainer->callbackID;
       cmdSession->timeout =
         (cmdContainer->timeout > POLL_TICK) ? cmdContainer->timeout : POLL_TICK;
-      cmdSession->preTimestamp = tick;//deviceDriver->getTimeStamp();
+      cmdSession->preTimestamp = getTimeStamp();//deviceDriver->getTimeStamp();
       cmdSession->sent         = 1;
       cmdSession->retry        = cmdContainer->retry;
 			     //发送会话
@@ -906,21 +907,26 @@ openProtocolSendData(uint8_t* buf)
 size_t 
 sendUsart(const uint8_t* buf, size_t len)
 {
+	static int count = 0;
   char* p = (char*)buf;
-
   if (NULL == buf)
   {
     return 0;
   }
 
   int sent_byte_count = 0;
+	printf("<@-----");
   while (len--)
   {
-    while (USART_GetFlagStatus(USART3, USART_FLAG_TC) == RESET)
-      ;
+		while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
+		USART_SendData(USART1, *p);
+    while (USART_GetFlagStatus(USART3, USART_FLAG_TC) == RESET);
     USART_SendData(USART3, *p++);
+
     ++sent_byte_count;
   }
+	printf("-----@>%d",count);
+	count++;
   return sent_byte_count;
 } //sendUsart
 
