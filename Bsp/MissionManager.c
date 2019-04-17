@@ -5,7 +5,7 @@
 static void init(DJI_MISSION_TYPE type, int timeout, UserData missionData);
 static void initWayptMission(int timeout, UserData wayptData);
 static void missionCallback(Vehicle* vehiclePtr, RecvContainer recvFrame,UserData userData);
-static ErrorCode inits(DJI_MISSION_TYPE type, int timeout, UserData missionData);
+//static ErrorCode inits(DJI_MISSION_TYPE type, int timeout, UserData missionData);
 //global variable
 MissionManager* missionManager;
 

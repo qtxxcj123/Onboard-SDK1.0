@@ -19,6 +19,11 @@ typedef struct Ack{
 	ackGetErrorCodeMessage getErrorCodeMessage;
 }Ack;
 
+typedef struct AckMap{
+	const uint32_t key;
+	const char* value;
+}AckMap;
+
 void externAckInit(void);
 
 static void interiAckInit(void);
@@ -44,5 +49,6 @@ static void getCMDSetMFIOMSG(ErrorCode ack);
 static void getCMDSetSubscribeMSG(ErrorCode ack);
 
 static void getCommonErrorCodeMessage(ErrorCode ack);
+static void findActivateMeg(uint32_t ackData);
 
 #endif

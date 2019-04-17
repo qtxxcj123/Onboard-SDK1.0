@@ -120,6 +120,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
+          <Name>饝??羨饝??羨饝?</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -151,18 +152,34 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>722</LineNumber>
+          <LineNumber>214</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134229360</Address>
+          <Address>134224528</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\DJI\OpenProtocol.c</Filename>
+          <Filename>..\DJI\Vehicle.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\Onboard_SDK\../DJI/OpenProtocol.c\722</Expression>
+          <Expression>\\Onboard_SDK\../DJI/Vehicle.c\214</Expression>
+        </Bp>
+        <Bp>
+          <Number>1</Number>
+          <Type>0</Type>
+          <LineNumber>40</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134232000</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>..\User\main.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\Onboard_SDK\../User/main.c\40</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
