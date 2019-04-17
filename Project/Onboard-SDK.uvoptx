@@ -151,7 +151,23 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>40</LineNumber>
+          <LineNumber>73</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134224354</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>..\User\main.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\Onboard_SDK\../User/main.c\73</Expression>
+        </Bp>
+        <Bp>
+          <Number>1</Number>
+          <Type>0</Type>
+          <LineNumber>41</LineNumber>
           <EnabledFlag>1</EnabledFlag>
           <Address>134224088</Address>
           <ByteObject>0</ByteObject>
@@ -162,7 +178,7 @@
           <BreakIfRCount>1</BreakIfRCount>
           <Filename>..\User\main.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\Onboard_SDK\../User/main.c\40</Expression>
+          <Expression>\\Onboard_SDK\../User/main.c\41</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
@@ -185,6 +201,11 @@
           <count>3</count>
           <WinNumber>1</WinNumber>
           <ItemText>extendedVersionBase</ItemText>
+        </Ww>
+        <Ww>
+          <count>4</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>missionManager</ItemText>
         </Ww>
       </WatchWindow1>
       <MemoryWindow1>
@@ -784,7 +805,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Bsp\WaypointMission.c</PathWithFileName>
+      <PathWithFileName>..\DJI\WaypointMission.c</PathWithFileName>
       <FilenameWithoutPath>WaypointMission.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -796,7 +817,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Bsp\MissionManager.c</PathWithFileName>
+      <PathWithFileName>..\DJI\MissionManager.c</PathWithFileName>
       <FilenameWithoutPath>MissionManager.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>

@@ -3,8 +3,8 @@
 #include "type.h"
 #include "WaypointMission.h"
 
-struct Vehicle;
 #define MAX_MISSION_SIZE  5
+struct Vehicle;
 typedef enum DJI_MISSION_TYPE
 {
   WAYPOINT = 0,
@@ -19,8 +19,8 @@ typedef enum MISSION_ACTION
   RESUME = 3,
 }MISSION_ACTION;
 
-typedef ErrorCode(*managerInit)(DJI_MISSION_TYPE, int, UserData); // ≥ı º
-typedef void(*managerCallback)(struct Vehicle*, RecvContainer,UserData);
+typedef void(*managerInit)(DJI_MISSION_TYPE, int, UserData); // ≥ı º
+typedef void(*managerCallback)(struct Vehicle*, RecvContainer, UserData);
 typedef struct MissionManager {
 // function pointer
 	managerInit init;

@@ -21,6 +21,7 @@ delay_nms(uint16_t time)
     }
 }
 
+
 void Test1()
 {
 	WayPointInitSettings fdata;
