@@ -8,6 +8,8 @@ RecvContainer *rFrame;
 extern Vehicle* vehicle;
 extern FirmWare extendedVersionBase;
 extern const FirmWare M100_31;
+void setWaypointDefaults(WayPointSettings* wp);
+void setWaypointInitDefaults(WayPointInitSettings* fdata);
 void
 delay_nms(uint16_t time)
 {
@@ -17,6 +19,75 @@ delay_nms(uint16_t time)
         i = 30000;
         while (i--);
     }
+}
+
+void Test1()
+{
+	WayPointInitSettings fdata;
+	
+	fdata.indexNumber=0x3;
+	fdata.maxVelocity=10;
+	fdata.idleVelocity=5;
+	fdata.finishAction=0;
+	fdata.executiveTimes=1;
+	fdata.yawMode=0;
+	fdata.traceMode=0;
+	fdata.RCLostAction=1;
+	fdata.gimbalPitch=0;
+	fdata.latitude=0;
+	fdata.longitude=0;
+	fdata.altitude=0;
+	vehicle->missionManager->init(WAYPOINT, 1, &fdata); //ÉÏ´«
+	
+	
+	WayPointSettings  wp;
+	setWaypointDefaults(&wp);
+	wp.index=                    0;
+	wp.latitude=                 0.3934463095114;
+	wp.longitude=                1.988958051958;
+	wp.altitude=                 10;
+	wp.damping=                  0;
+	wp.yaw=                      0;
+	wp.gimbalPitch=              0;
+	wp.turnMode=                 0;
+	wp.hasAction=                0;
+	wp.actionTimeLimit=          100;
+	wp.actionNumber=             0;
+	wp.actionRepeat=             0;
+	vehicle->missionManager->wpMission->uploadIndexData(&wp,0,0);
+	
+	setWaypointDefaults(&wp);
+	wp.index=                     1;
+	wp.latitude=                  0.3934453095114;
+	wp.longitude=                 1.988958051958;
+	wp.altitude=                  11;
+	wp.damping=                   0;
+	wp.yaw=                       0;
+	wp.gimbalPitch=               0;
+	wp.turnMode=                  0;
+	wp.hasAction=                 0;
+	wp.actionTimeLimit=           100;
+	wp.actionNumber=              0;
+	wp.actionRepeat=              0;
+	vehicle->missionManager->wpMission->uploadIndexData(&wp,0,0);
+	
+  setWaypointDefaults(&wp);
+	wp.index=                     2;
+	wp.latitude=                  0.3934463095114;
+	wp.longitude=                 1.988958051858;
+	wp.altitude=                  10;
+	wp.damping=                   0;
+	wp.yaw=                       0;
+	wp.gimbalPitch=               0;
+	wp.turnMode=                  0;
+	wp.hasAction=                 0;
+	wp.actionTimeLimit=           100;
+	wp.actionNumber=              0;
+	wp.actionRepeat=              0;
+	vehicle->missionManager->wpMission->uploadIndexData(&wp,0,0);
+	
+  vehicle->missionManager->wpMission->start(0,0);
+	
 }
 
 int main(void)
@@ -45,6 +116,8 @@ int main(void)
       delay_nms(500);
   }
 	vehicle->obtainCtrlAuthority(0,0);
+	delay_nms(500);
+	Test1();
 	while(1)
 	{
 		printf("init OK \r\n");

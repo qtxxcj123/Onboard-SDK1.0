@@ -96,7 +96,7 @@ static void processReceivedData(RecvContainer *receivedFrame)
     }
     else
     {          //指定为推送数据的调度器
-        MY_DEBUG("Dispatcher identified as push data\n");
+       // MY_DEBUG("Dispatcher identified as push data\n");
 		//推送数据处理程序                  收到框架
         //PushDataHandler(static_cast<void *>(receivedFrame));
     }
@@ -208,8 +208,8 @@ activate(ActivateData *data, VehicleCallBack callback,UserData userData)
     {
         vehicle->accountData.iosID[i] = '0'; //! @note for ios verification   用于iOS验证
     }
-    MY_DEBUG("version 0x%X\n", versionData.fwVersion);
-    MY_DEBUG("%.32s", accountData.iosID);
+    MY_DEBUG("version 0x%X\n", vehicle->versionData.fwVersion);
+    MY_DEBUG("%.32s", vehicle->accountData.iosID);
     //! Using function prototype II of send
     int cbIndex = callbackIdIndex();
     if (callback)

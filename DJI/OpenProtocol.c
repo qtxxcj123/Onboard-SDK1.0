@@ -918,8 +918,6 @@ sendUsart(const uint8_t* buf, size_t len)
   int sent_byte_count = 0;
   while (len--)
   {
-		while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
-		USART_SendData(USART1, *p);
     while (USART_GetFlagStatus(USART3, USART_FLAG_TC) == RESET);
     USART_SendData(USART3, *p++);
 

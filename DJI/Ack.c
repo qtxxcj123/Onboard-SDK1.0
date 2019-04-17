@@ -11,7 +11,7 @@ extern const uint8_t get[];
 extern const FirmWare M100_31;
 
 //ack key and value set
-AckMap missionData[] = {
+const AckMap missionData[] = {
 	{ MissionACK_Common_AT_NO_FLY_ZONE,
 	               (const char*)"MISSION_AT_NO_FLY_ZONE\n" },
 	{ MissionACK_Common_BAD_GPS,
@@ -370,6 +370,7 @@ static void
 getCMDSetMissionMSG(ErrorCode ack)
 {
 	MY_DEBUG("getCMDSetMissionMSG");
+	findMissionMeg(ack.data);
 }
 
 static void
@@ -411,4 +412,15 @@ findActivateMeg(uint32_t ackData)
 		if(ackData == activateData->key)break;
 	}
 	MY_DEBUG("%s",activateData[i].value);
+}
+
+static void
+findMissionMeg(uint32_t ackData)
+{
+	uint8_t i = 0;
+	for(i = 0; i < dataSize(missionData);i++)
+	{
+		if(ackData == missionData->key)break;
+	}
+	MY_DEBUG("%s",missionData[i].value);
 }

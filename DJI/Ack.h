@@ -49,6 +49,9 @@ static void getCMDSetMFIOMSG(ErrorCode ack);
 static void getCMDSetSubscribeMSG(ErrorCode ack);
 
 static void getCommonErrorCodeMessage(ErrorCode ack);
+
 static void findActivateMeg(uint32_t ackData);
+
+static void findMissionMeg(uint32_t ackData);
 
 #endif
